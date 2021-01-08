@@ -10,7 +10,7 @@ mdp = '#######'
 #Lancement du navigateur
 def init():
     options = Options()
-    options.headless = True
+    options.headless = False
     return webdriver.Firefox(options=options) 
 
 #Connection au portail LDV
@@ -25,6 +25,8 @@ def connect(driver):
 
 def checking(driver):
     time.sleep(1)
+    driver.get('https://www.leonard-de-vinci.net')
+    time.sleep(2)
     #check if LDV is responding
     if driver.find_element_by_xpath("//*[text()[contains(., 'Relevé de présence')]]"):
         driver.find_element_by_xpath("//*[text()[contains(., 'Relevé de présence')]]").click()
@@ -51,9 +53,9 @@ def getToPresencePage(cours, driver):
     ex[cours].find_element_by_css_selector('a').click()    
 
 def main():
+    driver = init()
+    connect(driver)
     while True:
-        driver = init()
-        connect(driver)
         checking(driver)
         nbLessons = getNumberOfLesson(driver)
         #Check which lessons the attendance can be taken
@@ -64,7 +66,7 @@ def main():
                 return print("Je t'es mis présent pour ton cours ;) ")
             else: 
                 print(driver.find_elements_by_css_selector('#body_presence div')[0].get_attribute("innerHTML"))
-        driver.quit()
+    driver.quit()
 
 if __name__ == '__main__':
     main()
